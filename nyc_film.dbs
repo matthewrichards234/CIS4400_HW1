@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="PostgreSQL" database="PostgreSQL" id="PostgreSQL-1e38" >
+	<schema name="public" >
+		<comment><![CDATA[standard public schema]]></comment>
+		<table name="agencies" prior="agenc" >
+			<comment><![CDATA[Stores unique event agencies involved.]]></comment>
+			<column name="dim_event_agency_id" type="integer" jt="4" mandatory="y" >
+				<comment><![CDATA[Unique ID for event agency]]></comment>
+			</column>
+			<column name="dim_event_agency" type="varchar" length="50" jt="12" >
+				<comment><![CDATA[Name of event agency]]></comment>
+			</column>
+			<index name="pk_agencies" unique="PRIMARY_KEY" >
+				<column name="dim_event_agency_id" />
+			</index>
+			<fk name="fk_agencies_events" to_schema="public" to_table="events" >
+				<fk_column name="dim_event_agency_id" pk="dim_event_agency_id" />
+			</fk>
+		</table>
+		<table name="categories" prior="tbl" >
+			<column name="dim_category_id" type="integer" jt="4" mandatory="y" >
+				<comment><![CDATA[Unique ID per category]]></comment>
+			</column>
+			<column name="dim_category" type="char" length="20" jt="1" >
+				<comment><![CDATA[Name of category]]></comment>
+			</column>
+			<index name="pk_categories" unique="PRIMARY_KEY" >
+				<column name="dim_category_id" />
+			</index>
+			<fk name="fk_categories_events" to_schema="public" to_table="events" >
+				<fk_column name="dim_category_id" pk="dim_category_id" />
+			</fk>
+		</table>
+		<table name="events" prior="event_id" >
+			<comment><![CDATA[unique event identification code per NY filming.]]></comment>
+			<column name="dim_event_id" type="integer" jt="4" mandatory="y" >
+				<comment><![CDATA[Unique event id code]]></comment>
+			</column>
+			<column name="dim_event_type" prior="event_type" type="char" length="50" jt="1" mandatory="y" >
+				<comment><![CDATA[The type of event being filmed. Could be a shooting permit, Rigging permits, Theater Load Ins/Outs, etc.]]></comment>
+			</column>
+			<column name="dim_start_date_time" prior="start_date_time" type="date" jt="91" mandatory="y" >
+				<comment><![CDATA[Event's starting time. Format: MONTH/DAY/YEAR 00:00:00 AM/PM
+(Note: NOT Army time)]]></comment>
+			</column>
+			<column name="dim_end_date_time" prior="end_date_time" type="date" jt="91" mandatory="y" >
+				<comment><![CDATA[Event's ending time. Format: MONTH/DAY/YEAR 00:00:00 AM/PM
+(Note: NOT Army time)]]></comment>
+			</column>
+			<column name="dim_entered_on" prior="entered_on" type="date" jt="91" mandatory="y" >
+				<comment><![CDATA[Event's date logged. Format: MONTH/DAY/YEAR 00:00:00 AM/PM
+(Note: NOT Army time)]]></comment>
+			</column>
+			<column name="dim_parking_held" prior="parking_held" type="char" length="200" jt="1" mandatory="y" >
+				<comment><![CDATA[Name of Parking Lot held in for filming]]></comment>
+			</column>
+			<column name="dim_category" prior="category" type="char" length="20" jt="1" mandatory="y" >
+				<comment><![CDATA[Category of filming  (i.e: Television, Commercial, Theater, etc.)]]></comment>
+			</column>
+			<column name="dim_subcategory_name" prior="subcategory_name" type="char" length="20" jt="1" >
+				<comment><![CDATA[Subcategory of filming (i.e:  Cable-episodic, Episodic series, Feature, etc.)]]></comment>
+			</column>
+			<column name="dim_event_agency_id" type="integer" jt="4" />
+			<column name="dim_location_id" type="integer" jt="4" />
+			<column name="dim_category_id" type="integer" jt="4" />
+			<index name="pk_event_id" unique="PRIMARY_KEY" >
+				<column name="dim_event_id" />
+			</index>
+			<index name="unq_events_dim_subcategory_name" unique="UNIQUE_KEY" >
+				<column name="dim_subcategory_name" />
+			</index>
+			<index name="unq_events_dim_event_agency_id" unique="UNIQUE_KEY" >
+				<column name="dim_event_agency_id" />
+			</index>
+			<index name="unq_events_dim_location_id" unique="UNIQUE_KEY" >
+				<column name="dim_location_id" />
+			</index>
+			<index name="unq_events_dim_category_id" unique="UNIQUE_KEY" >
+				<column name="dim_category_id" />
+			</index>
+		</table>
+		<table name="locations" prior="tbl" >
+			<comment><![CDATA[Locations of filmings]]></comment>
+			<column name="dim_location_id" type="integer" jt="4" mandatory="y" >
+				<comment><![CDATA[Unique ID for location]]></comment>
+			</column>
+			<column name="dim_borough" type="char" length="15" jt="1" mandatory="y" >
+				<comment><![CDATA[Borough of NYC filming]]></comment>
+			</column>
+			<column name="dim_community_boards" type="varchar" length="10" jt="12" />
+			<column name="dim_police_precincts" type="varchar" length="10" jt="12" >
+				<comment><![CDATA[Police precint number(s)]]></comment>
+			</column>
+			<column name="dim_country" type="char" length="2" jt="1" >
+				<comment><![CDATA[Country abbreviation]]></comment>
+			</column>
+			<column name="dim_zipcode" type="char" length="15" jt="1" mandatory="y" >
+				<comment><![CDATA[Zipcode]]></comment>
+			</column>
+			<index name="pk_locations" unique="PRIMARY_KEY" >
+				<column name="dim_location_id" />
+			</index>
+			<fk name="fk_locations_events" to_schema="public" to_table="events" >
+				<fk_column name="dim_location_id" pk="dim_location_id" />
+			</fk>
+		</table>
+	</schema>
+	<layout name="Main Layout" id="Layout-7a8" show_relation="columns" >
+		<entity schema="public" name="agencies" color="C1D8EE" x="102" y="442" />
+		<entity schema="public" name="categories" color="C1D8EE" x="527" y="442" />
+		<entity schema="public" name="events" color="C1D8EE" x="102" y="136" />
+		<entity schema="public" name="locations" color="C1D8EE" x="476" y="136" />
+		<callout x="51" y="51" pointer="Round" >
+			<comment><![CDATA[This is a layout. Create new tables by right-clicking the layout. 
+Double-click the table headers to edit.]]></comment>
+		</callout>
+	</layout>
+</project>
